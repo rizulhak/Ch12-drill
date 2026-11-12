@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Promoting Safety: The Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F6F8; --bg-raised:#FFFFFF; --ink:#142230; --ink-dim:#5B6B7A;
+  --line:#D8DFE6; --accent:#E8590C; --accent-ink:#FFFFFF;
+  --accent-2:#2E6E8E; --good:#1F7A5C; --good-bg:#E4F3EC;
+  --bad:#C2410C; --bad-bg:#FBE9E1; --amber:#C77D00; --amber-bg:#FCF0DC;
+  --navy:#13263B; --navy-2:#1C3650; --chip:#EEF2F6;
+  --font-display:'Barlow Condensed',system-ui,sans-serif;
+  --font-body:'Work Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1A26; --bg-raised:#182836; --ink:#EDF2F6; --ink-dim:#A7B6C4;
+    --line:#2B3E4F; --accent:#FF7A33; --accent-ink:#13171A;
+    --accent-2:#6FB6DA; --good:#4FCF9A; --good-bg:#15332A;
+    --bad:#FF8A5C; --bad-bg:#3A2017; --amber:#FFC24B; --amber-bg:#3A2E10;
+    --navy:#0B1622; --navy-2:#13263B; --chip:#1E3042; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1A26; --bg-raised:#182836; --ink:#EDF2F6; --ink-dim:#A7B6C4;
+  --line:#2B3E4F; --accent:#FF7A33; --accent-ink:#13171A;
+  --accent-2:#6FB6DA; --good:#4FCF9A; --good-bg:#15332A;
+  --bad:#FF8A5C; --bad-bg:#3A2017; --amber:#FFC24B; --amber-bg:#3A2E10;
+  --navy:#0B1622; --navy-2:#13263B; --chip:#1E3042; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+  min-height:100%;
+}
+html,body{height:100%}
+h1,h2,h3{font-family:var(--font-display); font-weight:700; text-wrap:balance; margin:0}
+.mono{font-family:var(--font-mono)}
+.wrap{max-width:860px; margin:0 auto; padding-block:18px 100px}
+
+.topbar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:10;
+  background:var(--bg); padding-block:10px 8px; margin-inline:-16px; padding-inline:max(16px, env(safe-area-inset-left,0px)) max(16px, env(safe-area-inset-right,0px));
+  border-bottom:1px solid var(--line);
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.topbar-row{display:flex; align-items:center; justify-content:space-between; gap:12px; max-width:860px; margin:0 auto;}
+.brand{display:flex; flex-direction:column; line-height:1.1}
+.brand .eyebrow{font-family:var(--font-display); font-size:11px; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; font-weight:600}
+.brand .name{font-family:var(--font-display); font-size:19px; font-weight:700}
+.score-pill{
+  font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--ink);
+  background:var(--chip); border:1px solid var(--line); border-radius:999px; padding:6px 12px;
+  display:flex; align-items:center; gap:6px; white-space:nowrap;
+}
+.score-pill .dot{width:7px; height:7px; border-radius:50%; background:var(--accent)}
+
+.rail{max-width:860px; margin:10px auto 0; display:flex; gap:3px; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin}
+.rail::-webkit-scrollbar{height:4px}
+.tick{
+  flex:1 0 14px; height:7px; border-radius:3px; background:var(--line); border:none; padding:0; cursor:pointer;
+  min-width:10px; transition:transform .15s;
+}
+.tick:hover{transform:scaleY(1.4)}
+.tick[data-part="1"]{--pc:var(--accent-2)}
+.tick[data-part="2"]{--pc:var(--accent)}
+.tick[data-part="3"]{--pc:var(--good)}
+.tick[data-part="4"]{--pc:#9568C9}
+.tick[data-part="5"]{--pc:#C2410C}
+.tick.visited{background:var(--pc)}
+.tick.current{background:var(--ink); height:9px}
+
+.card{
+  background:var(--bg-raised); border:1px solid var(--line); border-radius:14px;
+  padding:26px 24px 24px; margin-top:18px;
+}
+.kicker{font-family:var(--font-display); font-size:12.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--accent); font-weight:600; margin-bottom:6px}
+.stationno{color:var(--ink-dim); font-family:var(--font-mono); font-size:12px}
+h2.title{font-size:clamp(24px,5vw,32px); margin-bottom:14px}
+.body-text{font-size:15.5px; line-height:1.6; color:var(--ink)}
+.body-text + .body-text{margin-top:10px}
+.body-text b{color:var(--ink)}
+.callout{
+  background:var(--chip); border-left:3px solid var(--accent-2); border-radius:0 8px 8px 0;
+  padding:10px 14px; font-size:14px; color:var(--ink-dim); margin-top:14px;
+}
+.statline{font-family:var(--font-mono); font-size:13px; color:var(--accent-2); background:var(--chip); display:inline-block; padding:3px 9px; border-radius:6px; margin-top:8px}
+
+.widget{margin-top:18px}
+.prompt{font-weight:600; font-size:15.5px; margin-bottom:12px}
+.opt-list{display:flex; flex-direction:column; gap:8px}
+.opt{
+  display:flex; align-items:flex-start; gap:10px; text-align:left; width:100%;
+  background:var(--bg); border:1.5px solid var(--line); border-radius:10px; padding:11px 14px;
+  font-family:var(--font-body); font-size:14.5px; color:var(--ink); cursor:pointer; transition:.12s border-color,.12s background;
+}
+.opt:hover{border-color:var(--accent-2)}
+.opt .box{flex:0 0 auto; width:18px; height:18px; border-radius:5px; border:1.5px solid var(--line); margin-top:1px; display:flex; align-items:center; justify-content:center; font-size:11px}
+.opt.radio .box{border-radius:50%}
+.opt.correct{border-color:var(--good); background:var(--good-bg)}
+.opt.correct .box{background:var(--good); border-color:var(--good); color:#fff}
+.opt.incorrect{border-color:var(--bad); background:var(--bad-bg)}
+.opt.incorrect .box{background:var(--bad); border-color:var(--bad); color:#fff}
+.opt:disabled, .opt.locked{cursor:default}
+.feedback{margin-top:12px; padding:11px 14px; border-radius:10px; font-size:14px; line-height:1.5; display:none}
+.feedback.show{display:block}
+.feedback.good{background:var(--good-bg); color:var(--good)}
+.feedback.bad{background:var(--bad-bg); color:var(--bad)}
+.feedback b{color:inherit}
+
+.match-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+@media (max-width:480px){.match-grid{grid-template-columns:1fr}}
+.match-col-label{font-family:var(--font-display); font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:8px}
+.match-item{
+  width:100%; text-align:left; background:var(--bg); border:1.5px solid var(--line); border-radius:9px;
+  padding:10px 12px; font-size:14px; margin-bottom:8px; cursor:pointer; color:var(--ink);
+}
+.match-item.sel{border-color:var(--accent); background:var(--chip)}
+.match-item.paired{border-color:var(--good); background:var(--good-bg); cursor:default; opacity:.85}
+.match-item.wrong-flash{border-color:var(--bad); background:var(--bad-bg)}
+
+.sort-pool{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; min-height:40px}
+.sort-chip{
+  background:var(--chip); border:1.5px solid var(--line); border-radius:999px; padding:7px 13px;
+  font-size:13.5px; cursor:pointer; color:var(--ink);
+}
+.sort-chip.gone{opacity:0; pointer-events:none}
+.sort-buckets{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+@media (max-width:480px){.sort-buckets{grid-template-columns:1fr}}
+.bucket{border:1.5px dashed var(--line); border-radius:10px; padding:10px; min-height:90px}
+.bucket-label{font-family:var(--font-display); font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-dim); margin-bottom:8px}
+.bucket .placed{display:inline-block; background:var(--bg-raised); border:1px solid var(--line); border-radius:999px; padding:5px 11px; font-size:13px; margin:0 4px 4px 0}
+.bucket .placed.right{border-color:var(--good); background:var(--good-bg); color:var(--good)}
+.bucket .placed.wrong{border-color:var(--bad); background:var(--bad-bg); color:var(--bad)}
+
+.seq-list{display:flex; flex-direction:column; gap:8px}
+.seq-item{
+  display:flex; align-items:center; gap:12px; background:var(--bg); border:1.5px solid var(--line);
+  border-radius:10px; padding:10px 12px; font-size:14.5px;
+}
+.seq-num{font-family:var(--font-mono); font-weight:700; color:var(--accent); min-width:20px}
+.seq-btns{display:flex; gap:4px; margin-left:auto}
+.seq-btns button{
+  width:26px; height:26px; border-radius:6px; border:1px solid var(--line); background:var(--bg-raised);
+  color:var(--ink); cursor:pointer; font-size:13px; line-height:1;
+}
+.seq-btns button:disabled{opacity:.3; cursor:default}
+
+.qf-item{border-top:1px solid var(--line); padding-top:16px; margin-top:16px}
+.qf-item:first-child{border-top:none; padding-top:0; margin-top:0}
+.qf-score-ring{
+  width:96px;height:96px;border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:conic-gradient(var(--accent) calc(var(--pct,0)*1%), var(--line) 0); margin:0 auto 14px;
+}
+.qf-score-ring span{
+  width:76px;height:76px;border-radius:50%; background:var(--bg-raised); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:20px;
+}
+.qf-score-ring span small{font-size:10px; font-weight:500; color:var(--ink-dim); font-family:var(--font-body)}
+
+.chk-row{display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--line)}
+.chk-row:last-child{border-bottom:none}
+.chk-box{flex:0 0 auto; width:19px;height:19px;border-radius:5px;border:1.5px solid var(--line); margin-top:2px; cursor:pointer; display:flex;align-items:center;justify-content:center; font-size:12px; background:var(--bg)}
+.chk-box.on{background:var(--good); border-color:var(--good); color:#fff}
+
+.navbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:9; background:var(--bg-raised); border-top:1px solid var(--line);
+  padding:10px max(16px, env(safe-area-inset-right,0px)) max(10px, env(safe-area-inset-bottom,0px)) max(16px, env(safe-area-inset-left,0px));
+}
+.navbar-row{max-width:860px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:10px}
+.nbtn{
+  font-family:var(--font-display); font-weight:600; font-size:15px; letter-spacing:.02em;
+  border-radius:9px; padding:10px 18px; cursor:pointer; border:1.5px solid var(--line); background:var(--bg);
+  color:var(--ink); display:flex; align-items:center; gap:6px;
+}
+.nbtn.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.nbtn:disabled{opacity:.35; cursor:default}
+.nav-mid{font-family:var(--font-mono); font-size:12.5px; color:var(--ink-dim); white-space:nowrap}
+
+.hero{text-align:center; padding:28px 8px 8px}
+.hero .tag{font-family:var(--font-display); font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:600}
+.hero h1{font-size:clamp(30px,8vw,44px); margin:10px 0 12px}
+.hero p{font-size:15.5px; color:var(--ink-dim); max-width:480px; margin:0 auto 20px; line-height:1.55}
+.part-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:22px}
+@media (max-width:680px){.part-grid{grid-template-columns:1fr 1fr}}
+.part-card{background:var(--bg-raised); border:1px solid var(--line); border-radius:12px; padding:14px 12px; text-align:left}
+.part-card .n{font-family:var(--font-mono); color:var(--accent); font-size:12px; font-weight:700}
+.part-card .t{font-family:var(--font-display); font-weight:700; font-size:16px; margin-top:4px}
+.bigstart{
+  font-family:var(--font-display); font-size:17px; font-weight:700; letter-spacing:.02em;
+  background:var(--accent); color:var(--accent-ink); border:none; border-radius:10px; padding:13px 30px; cursor:pointer;
+}
+a.exit-link{color:var(--accent-2)}
+
+.namegate{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.namegate-card{max-width:420px;width:100%;background:var(--bg-raised);border:1px solid var(--line);border-radius:16px;padding:28px 24px;box-shadow:0 12px 32px rgba(20,34,48,.12)}
+.namegate-card h2{font-family:var(--font-display);font-size:28px;margin:0 0 6px;color:var(--ink)}
+.namegate-card p{font-family:var(--font-body);font-size:14.5px;color:var(--ink-dim);margin:0 0 18px;line-height:1.5}
+.namegate-card label{display:block;font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.namegate-card input{width:100%;box-sizing:border-box;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--font-body);font-size:15.5px;color:var(--ink);background:#fff}
+.namegate-card input:focus{outline:none;border-color:var(--accent)}
+.namegate-card .ng-err{color:var(--bad);font-family:var(--font-body);font-size:13px;margin-top:6px;min-height:1.2em}
+.namegate-card button{margin-top:16px;width:100%;padding:13px;border:none;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-family:var(--font-body);font-weight:700;font-size:15.5px;cursor:pointer}
+.namegate-card button:hover{filter:brightness(1.06)}
+.namegate.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="namegate" id="namegate">
+  <div class="namegate-card">
+    <h2>Before you start</h2>
+    <p>Enter your name so it's there for your own reference as you work through the walkthrough.</p>
+    <label for="ngName">Your name</label>
+    <input type="text" id="ngName" autocomplete="name" placeholder="e.g. Jordan Smith" maxlength="80">
+    <div class="ng-err" id="ngErr"></div>
+    <button id="ngGo">Continue →</button>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="brand"><span class="eyebrow">BCS 3116 · Ch. 12 Interactive</span><span class="name">Promoting Safety: The Walkthrough</span></div>
+    <div class="score-pill"><span class="dot"></span><span id="scoreText">0 / 0</span></div>
+  </div>
+  <div class="rail" id="rail"></div>
+</div>
+
+<div class="wrap">
+  <div id="stage"></div>
+</div>
+
+<div class="navbar">
+  <div class="navbar-row">
+    <button class="nbtn" id="btnBack">&larr; Back</button>
+    <span class="nav-mid" id="navMid"></span>
+    <button class="nbtn primary" id="btnNext">Next &rarr;</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------------------------------------------------------
+   NAME GATE — purely for the student's own reference, nothing sent anywhere.
+--------------------------------------------------------------- */
+let studentName = "";
+try{ studentName = localStorage.getItem('ch12_name') || ""; }catch(e){}
+
+function gateInit(){
+  const gate = document.getElementById('namegate');
+  const input = document.getElementById('ngName');
+  const err = document.getElementById('ngErr');
+  const go = document.getElementById('ngGo');
+  if(studentName){ gate.classList.add('hidden'); return; }
+  input.value = studentName;
+  function submit(){
+    const v = input.value.trim();
+    if(v.length < 2){ err.textContent = 'Please enter your name.'; input.focus(); return; }
+    studentName = v;
+    try{ localStorage.setItem('ch12_name', v); }catch(e){}
+    gate.classList.add('hidden');
+  }
+  go.addEventListener('click', submit);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); });
+  input.focus();
+}
+
+/* ---------------------------------------------------------------
+   DATA: stations across 5 parts, 0 = start, last = end
+--------------------------------------------------------------- */
+const PARTS = {1:"Policy, Rules & Participation", 2:"Safety Training", 3:"Suggestions, Visual Awareness & Committees", 4:"Commitment, Incentives & Competition", 5:"Teamwork, Mentoring & Contracts"};
+
+const S = [];
+
+S.push({kind:"start"});
+
+/* ---------- PART 1 ---------- */
+S.push({part:1, kicker:"The Foundation", title:"Where Promoting Safety Begins", type:"mcq",
+  body:["Promoting safety begins with having a published company <b>safety policy</b> — making clear that safe work is expected of everyone, at every level, at all times."],
+  prompt:"What role does the chapter say the safety policy plays?",
+  options:[
+    {t:"It's a legal formality required for insurance purposes", c:false, x:"The policy isn't about insurance paperwork — it's the foundation for everything else."},
+    {t:"It's the foundation upon which every other promotional effort is built", c:true, x:"Correct — every other technique in the chapter (training, suggestion systems, incentives, teamwork) builds on a published policy."},
+    {t:"It matters only for large companies with many employees", c:false, x:"Company size isn't the relevant distinction — every company benefits from a clear policy."},
+  ]});
+
+S.push({part:1, kicker:"Figure 12-1", title:"What a Safety Policy Should Convey", type:"multi",
+  body:["A safety policy need not be long or elaborate — short and simple is better. At minimum, it should convey a few key things."],
+  prompt:"Select everything the chapter says a basic safety policy should convey.",
+  options:[
+    {t:"The company and its top managers are committed to safety and health", c:true},
+    {t:"Employees are expected to perform their duties in a safe and healthy manner", c:true},
+    {t:"The company's commitment extends to customers and the community", c:true},
+    {t:"A detailed legal disclaimer limiting the company's liability", c:false},
+    {t:"A complete list of every safety rule and regulation", c:false},
+  ],
+  explain:"The policy is a short statement of commitment and expectation — not a legal disclaimer or an exhaustive rulebook; the rules themselves come later."});
+
+S.push({part:1, kicker:"Legal Obligations", title:"An Employer's Three-Step Obligation", type:"sequence",
+  body:["A safety policy is translated into everyday action by rules and regulations. From a legal standpoint, an employer has three obligations — in a logical order."],
+  items:["Have rules that ensure a safe and healthy workplace","Ensure that all employees know about the rules","Ensure that the rules are enforced objectively and consistently"],
+  correctOrder:[0,1,2],
+  explain:"Rules have to exist before anyone can know them, and employees have to know them before enforcement is fair — it's enforcement, the final step, from which most negligence charges arise."});
+
+S.push({part:1, kicker:"Objectivity vs. Consistency", title:"Two Words That Aren't the Same", type:"sort",
+  body:["Enforcing safety rules fairly depends on two related but different ideas. Sort each statement to the idea it describes."],
+  buckets:["Objectivity","Consistency"],
+  items:[
+    {t:"Rules are enforced without bias toward or against any individual", b:0},
+    {t:"The same violation draws the same consequence every time, no matter who commits it", b:1},
+    {t:"A supervisor could, in theory, be consistently biased — proving the two ideas are related but distinct", b:1},
+    {t:"Applying a rule the same way to a favorite employee as to anyone else", b:0},
+  ]});
+
+S.push({part:1, kicker:"Figure 12-2", title:"The Risk of Too Many Rules", type:"mcq",
+  body:["The guidelines for developing safety rules start with a caution about quantity, not just wording."],
+  prompt:"What does the chapter say happens when a company writes too many rules?",
+  options:[
+    {t:"Employees read them more carefully, since there's more to learn", c:false, x:"More rules doesn't improve attention — it does the opposite."},
+    {t:"It risks \"rule overload,\" so the number of rules should be minimized to the extent possible", c:true, x:"Correct — minimizing the number of rules is the very first guideline listed."},
+    {t:"OSHA requires a minimum rule count before it will approve a safety program", c:false, x:"OSHA sets no minimum rule count — the chapter's concern runs the other way."},
+  ]});
+
+S.push({part:1, kicker:"Quick Check", title:"True or False: Policy & Rules", type:"truefalse",
+  body:["Mark each statement about safety policy and rules true or false."],
+  items:[
+    {t:"A short, simple safety policy is considered less effective than a long, detailed one.", a:false, x:"False — the chapter says a short, simple policy is actually better."},
+    {t:"Of the three legal obligations, it's enforcement from which most negligence charges arise.", a:true, x:"True."},
+    {t:"The guidelines favor writing as many detailed rules as possible to cover every situation.", a:false, x:"False — fewer, clearer, enforceable rules are favored instead."},
+    {t:"Involving employees in developing rules for their own work areas is specifically recommended.", a:true, x:"True."},
+  ]});
+
+S.push({part:1, kicker:"Figure 12-2", title:"Guidelines for Developing Safety Rules", type:"multi",
+  body:["The chapter lists guidelines for writing rules that actually work."],
+  prompt:"Select every guideline the chapter actually lists.",
+  options:[
+    {t:"Minimize the number of rules to the extent possible", c:true},
+    {t:"Write rules in clear, simple, brief language", c:true},
+    {t:"Develop only rules that can and will be enforced", c:true},
+    {t:"Involve employees in developing rules for their own areas", c:true},
+    {t:"Use common sense in developing rules", c:true},
+    {t:"Write as many detailed rules as possible to cover every situation", c:false},
+    {t:"Require a company attorney to approve every new rule", c:false},
+  ],
+  explain:"Too many rules risk \"rule overload\" — the chapter favors fewer, clearer, enforceable rules developed with employee input, not an attorney-approved maximalist rulebook."});
+
+S.push({part:1, kicker:"Nobody Knows the Job Better", title:"Why Involve Employees?", type:"mcq",
+  body:["\"If you want employees to make a commitment, involve them from the start.\" One of the keys to promoting safety is employee participation."],
+  prompt:"Per the chapter, why are employees especially valuable in developing safety rules?",
+  options:[
+    {t:"They are legally required to co-sign every rule", c:false, x:"There's no such legal requirement — the value is practical, not procedural."},
+    {t:"They usually know better than anyone where hazards exist, and must follow the rules themselves", c:true, x:"Right — that combination is exactly why their input and ownership matter."},
+    {t:"It reduces the number of safety meetings management must hold", c:false, x:"Participation isn't about cutting meetings — it's about better rules and real buy-in."},
+  ]});
+
+S.push({part:1, kicker:"Leading From the Front", title:"Promoting Safety by Example", type:"mcq",
+  body:["Once a safety policy is in place, its credibility is determined by the example management sets — from supervisors through executives. “Do as I say, not as I do” does not work with employees today."],
+  prompt:"When does the chapter say good safety examples most often break down?",
+  options:[
+    {t:"During slow periods with little work to do", c:false, x:"Idle time isn't the pressure point the chapter identifies."},
+    {t:"Under the pressure of deadlines, when supervisors may encourage shortcuts or look the other way", c:true, x:"Correct — that's exactly when the “we talk about safety, we don't believe in it” message gets sent."},
+    {t:"Only during new-employee orientation", c:false, x:"Orientation isn't singled out as the breakdown point — ongoing deadline pressure is."},
+  ]});
+
+/* ---------- PART 2 ---------- */
+S.push({part:2, kicker:"29 CFR 1926.21", title:"OSHA's Safety Training Rule", type:"mcq",
+  body:["OSHA's training rule requires employers to instruct employees in recognizing and avoiding hazardous conditions and in the regulations that apply to their work environment."],
+  prompt:"Which of these is one of the minimum required training topics under the rule?",
+  options:[
+    {t:"Confined-space entry", c:true, x:"Correct — along with handling harmful/toxic substances, hazardous plants/animals on site, and flammable liquids and gases."},
+    {t:"Personal financial planning for retirement", c:false, x:"Not a safety training topic under this rule."},
+    {t:"Customer service skills", c:false, x:"Not part of OSHA's safety training rule."},
+  ]});
+
+S.push({part:2, kicker:"OSHA's Outreach Training Program", title:"Match the Course to What It's For", type:"match",
+  body:["OSHA offers more than one way to get training. Match each option to who it's for and what it covers."],
+  pairs:[
+    {l:"10-Hour Course", r:"Entry-level workers with no prior safety training — recognizing, avoiding, and preventing common construction hazards"},
+    {l:"30-Hour Course", r:"Supervisors and workers with specific safety responsibilities — also covers worker rights and employer responsibilities"},
+    {l:"On-line Training", r:"About 40 self-paced courses with a printable certificate, from orientation to bloodborne pathogens and scaffold safety"},
+  ]});
+
+S.push({part:2, kicker:"What Companies Actually Ask For", title:"Frequently Requested Training Topics", type:"multi",
+  body:["The chapter lists topics construction companies frequently request for training, in no particular order of priority."],
+  prompt:"Select every topic the chapter actually lists.",
+  options:[
+    {t:"Fall protection", c:true},
+    {t:"Lockout/tagout", c:true},
+    {t:"Ergonomics", c:true},
+    {t:"Bloodborne pathogens", c:true},
+    {t:"Advanced blueprint drafting software", c:false},
+    {t:"Corporate tax compliance", c:false},
+  ],
+  explain:"The real list runs from asbestos awareness through stress and workplace violence — drafting software and tax compliance aren't safety training topics."});
+
+S.push({part:2, kicker:"Toolbox Talks", title:"Setting Up the Talk", type:"mcq",
+  body:["Before the watermelon ever comes out, a few basics determine whether a toolbox talk actually works."],
+  prompt:"What does the chapter say about where to hold a toolbox talk?",
+  options:[
+    {t:"Choose a place conducive to discussion — free of noise and other distractions", c:true, x:"Correct — and make it a two-way conversation, with time for questions, not just a lecture."},
+    {t:"Hold it wherever is most convenient, since location doesn't affect how well it works", c:false, x:"Location matters — noise and distraction undercut the conversation the talk is supposed to be."},
+    {t:"Always hold it in a formal classroom, never on the job site", c:false, x:"The chapter doesn't require a classroom setting — it requires a setting free of noise and distraction."},
+  ]});
+
+S.push({part:2, kicker:"Toolbox Talks", title:"The Watermelon Demonstration", type:"scenario",
+  body:["A classic toolbox talk prop: drop a hammer from 10–15 feet onto a watermelon wearing a hard hat, then drop it again onto a melon with no hard hat."],
+  prompt:"What's the point of this demonstration?",
+  options:[
+    {t:"To show which brand of hard hat is strongest", c:false, x:"It's not a product comparison — it's a visceral stand-in for what a hard hat protects."},
+    {t:"To make the consequence of skipping a hard hat impossible to forget — the melon stands in for a worker's head", c:true, x:"Exactly. Props and devices that hold attention are part of what makes a toolbox talk effective."},
+    {t:"To demonstrate proper fruit-handling safety on site", c:false, x:"The watermelon is a stand-in, not the actual subject of the talk."},
+  ]});
+
+S.push({part:2, kicker:"Other Approaches to Training", title:"Blended, Case Study, or Computer-Based?", type:"sort",
+  body:["Three training delivery approaches are described in the chapter. Sort each description to the approach it matches."],
+  buckets:["Blended Learning","Case Studies","Computer-Based / On-line"],
+  items:[
+    {t:"Combines more than one teaching approach, such as online study plus classroom discussion", b:0},
+    {t:"Real situations that let trainers explain the who, what, where, when, why, and how", b:1},
+    {t:"Self-paced, individualized, and interactive, but lacking face-to-face interaction", b:2},
+    {t:"Works best as one component of a combined format, not used entirely alone", b:2},
+  ]});
+
+S.push({part:2, kicker:"Delivery Methods", title:"True or False: Blended, Case Study & Computer-Based", type:"truefalse",
+  body:["Mark each statement about these training delivery approaches true or false."],
+  items:[
+    {t:"Blended learning combines more than one teaching approach, such as online study plus classroom discussion.", a:true, x:"True."},
+    {t:"Case studies work best without any discussion or debate among participants.", a:false, x:"False — case studies are meant to spark discussion and debate, not shut it down."},
+    {t:"Computer-based training is fully interactive and includes face-to-face interaction by design.", a:false, x:"False — it lacks face-to-face interaction, which is why it works best as one part of a blended format."},
+    {t:"How training is presented affects results, though trainer talent matters regardless of approach.", a:true, x:"True."},
+  ]});
+
+S.push({part:2, kicker:"Reaching Every Worker", title:"Multilingual Safety Training", type:"mcq",
+  body:["Construction professionals should be prepared to train a multilingual audience."],
+  prompt:"Roughly what share of the construction workforce does the chapter say immigrants now approach?",
+  options:[
+    {t:"5 percent", c:false, x:"The real figure is notably higher."},
+    {t:"15 percent", c:true, x:"Correct — and nearly half of those immigrant construction workers have limited command of English."},
+    {t:"40 percent", c:false, x:"The chapter's figure is lower than this."},
+  ]});
+
+/* ---------- PART 3 ---------- */
+S.push({part:3, kicker:"Suggestion Programs", title:"What Makes a Suggestion Program Work", type:"multi",
+  body:["Well-run suggestion programs solicit employee input and give employees ownership of the safety program — but only if certain criteria are met."],
+  prompt:"Select every criterion the chapter lists for an effective suggestion program.",
+  options:[
+    {t:"All suggestions must receive a formal, immediate response", c:true},
+    {t:"Costs and savings from the system must be reported", c:true},
+    {t:"Good ideas must actually be implemented", c:true},
+    {t:"Personality conflicts must be minimized", c:true},
+    {t:"Only suggestions from supervisors should be accepted", c:false},
+    {t:"Suggestions must be submitted in writing by a licensed engineer", c:false},
+  ],
+  explain:"The program is open to all employees — gatekeeping suggestions by rank or credential defeats the entire purpose of a suggestion system."});
+
+S.push({part:3, kicker:"Visual Awareness", title:"All Six Rules of Thumb", type:"multi",
+  body:["The chapter lists six rules of thumb for keeping visual safety aids effective."],
+  prompt:"Select every rule of thumb the chapter actually lists.",
+  options:[
+    {t:"Change signs and posters periodically", c:true},
+    {t:"Involve employees in developing the messages", c:true},
+    {t:"Keep visual aids simple and the message brief", c:true},
+    {t:"Make visual aids large enough to be seen from a reasonable distance", c:true},
+    {t:"Locate visual aids for maximum effect", c:true},
+    {t:"Use color whenever possible, following OSHA's color standards", c:true},
+    {t:"Require a licensed graphic designer to approve every sign", c:false},
+    {t:"Limit each site to no more than one sign per hazard type", c:false},
+  ],
+  explain:"The six real rules are about changing, involving employees, simplicity, size, placement, and color — nothing about requiring a designer's sign-off or capping sign counts."});
+
+S.push({part:3, kicker:"Visual Awareness", title:"Rules of Thumb — Spot the Odd One Out", type:"mcq",
+  body:["The chapter gives several rules of thumb for keeping visual safety aids (signs, posters) effective."],
+  prompt:"Which of these is NOT one of the chapter's rules of thumb?",
+  options:[
+    {t:"Change signs and posters periodically so they don't blend into the background", c:false, x:"This is one of the real rules."},
+    {t:"Keep the message simple and brief", c:false, x:"This is one of the real rules."},
+    {t:"Leave a sign in exactly the same place and wording for the life of the building, for consistency", c:true, x:"Correct — the chapter says the opposite: change visual aids periodically, or they stop being noticed."},
+  ]});
+
+S.push({part:3, kicker:"Visual Awareness", title:"True or False: Making Signs Work", type:"truefalse",
+  body:["Mark each statement about visual safety aids true or false."],
+  items:[
+    {t:"Visual aids should be located for maximum effect, such as near the on-off switch of the machine in question.", a:true, x:"True — placement near the point of action is exactly the idea."},
+    {t:"Involving employees in developing the message makes a sign less effective, since professional designers do it better.", a:false, x:"False — people notice and heed their own messages more readily; employee involvement helps, it doesn't hurt."},
+    {t:"Color should be used whenever possible, following OSHA's color standards where applicable.", a:true, x:"True."},
+    {t:"A sign should be made just large enough to be read up close, to avoid wasting space.", a:false, x:"False — signs should be large enough to be seen easily from a reasonable distance."},
+  ]});
+
+S.push({part:3, kicker:"Safety Committees", title:"Who Should Be on the Committee?", type:"mcq",
+  body:["A safety committee's composition can be a major factor in its success or failure."],
+  prompt:"What does the chapter say makes the most effective committee composition?",
+  options:[
+    {t:"Only safety professionals and managers, to keep meetings efficient", c:false, x:"That composition leaves out the people who are closest to the hazards."},
+    {t:"A broad cross section of workers representing all departments", c:true, x:"Correct — this gives each member a constituent group and gives all employees a representative voice."},
+    {t:"Whichever employees volunteer first, regardless of department", c:false, x:"First-come composition risks leaving whole departments unrepresented."},
+  ]});
+
+S.push({part:3, kicker:"Safety Committee Meetings", title:"Running an Efficient Meeting", type:"sequence",
+  body:["Every committee member has another job to do, so meetings run on an agenda. Put these early steps of a typical meeting in order."],
+  items:["Call to order","Record attendance","Review and approve previous minutes","Discuss old business","Discuss new business"],
+  correctOrder:[0,1,2,3,4],
+  explain:"The agenda moves from administrative housekeeping (call to order, attendance, minutes) into old business before new business — keeping the meeting efficient for members who have other jobs waiting."});
+
+S.push({part:3, kicker:"Safety Committees", title:"Who Chairs the Committee?", type:"mcq",
+  body:["The committee should pick its own chairperson and a recording secretary from the membership."],
+  prompt:"Who, per the chapter, should NOT serve as chairperson?",
+  options:[
+    {t:"Any rank-and-file employee on the committee", c:false, x:"Rank-and-file members are exactly who the chair should come from."},
+    {t:"Neither the executive manager nor the safety director", c:true, x:"Correct — excluding them from the chair gives employees more ownership of the committee; either one can still serve as recording secretary."},
+    {t:"Anyone who has served on the committee for less than a year", c:false, x:"Tenure on the committee isn't the disqualifying factor the chapter names."},
+  ]});
+
+S.push({part:3, kicker:"Guidelines for a Safety Committee", title:"Do or Don't?", type:"sort",
+  body:["Sort each piece of advice for running a safety committee into the right bucket."],
+  buckets:["Do","Don't"],
+  items:[
+    {t:"Give the committee authority commensurate with its responsibilities", b:0},
+    {t:"Reward progress, participation, and leadership", b:0},
+    {t:"Encourage trust, teamwork, respect, and partnership", b:0},
+    {t:"Train members to carry out their responsibilities", b:0},
+    {t:"Let the committee function as \"safety cops\"", b:1},
+    {t:"Let any one member dominate meetings", b:1},
+    {t:"Rotate members too quickly — stagger memberships instead", b:1},
+    {t:"Punish, which creates fear and inhibits communication", b:1},
+  ]});
+
+/* ---------- PART 4 ---------- */
+S.push({part:4, kicker:"Gaining a Personal Commitment", title:"Why Have Employees Sign?", type:"multi",
+  body:["One way to gain personal commitment to safety is to have employees sign a pledge — a written commitment, like a credit statement or a mortgage."],
+  prompt:"Select every advantage the chapter says a company gains from this.",
+  options:[
+    {t:"Employees make a personal commitment by signing", c:true},
+    {t:"Employees promise to interact positively with coworkers who ignore precautions", c:true},
+    {t:"Employees give coworkers permission to correct them when they ignore precautions", c:true},
+    {t:"The company gains a legal waiver releasing it from all liability", c:false},
+  ],
+  explain:"The signature is about commitment and peer accountability — it is explicitly not described as a liability waiver."});
+
+S.push({part:4, kicker:"Case File — Muskegon, Michigan", title:"The “Sign Up for Safety” Campaign", type:"scenario",
+  body:["Fettig asked employees to sign a declaration that they would work in a safe manner. One employee refused at first, suspecting a trick."],
+  prompt:"What did that employee say, and what turned the program around?",
+  options:[
+    {t:"He said it was “nothing but a sneaky way to get the documentation necessary to fire us” — and his eventual willingness to sign is what made the program work", c:true, x:"Exactly right — suspicion gave way once the program was shown to be genuine, and that shift is what made it succeed."},
+    {t:"He refused permanently, and the company abandoned the program", c:false, x:"The program didn't fail — the employee's eventual buy-in is presented as the turning point."},
+    {t:"He demanded a pay raise in exchange for signing", c:false, x:"The objection was about trust and motive, not compensation."},
+  ]});
+
+S.push({part:4, kicker:"Safety Incentives", title:"Strategies for Using Incentives Well", type:"multi",
+  body:["OSHA is skeptical of incentive programs, since poorly run ones can lead to underreporting. The chapter lists strategies to use incentives responsibly."],
+  prompt:"Select every strategy the chapter recommends.",
+  options:[
+    {t:"Define objectives up front", c:true},
+    {t:"Develop specific criteria for what's being rewarded", c:true},
+    {t:"Make rewards meaningful to the people receiving them", c:true},
+    {t:"Involve employees in planning the program", c:true},
+    {t:"Reward teams rather than only individuals", c:true},
+    {t:"Keep the criteria vague so they can be adjusted after the fact", c:false},
+  ],
+  explain:"Vague, after-the-fact criteria is exactly what the chapter warns against — clear, defined, employee-involved criteria are what keep incentives from backfiring."});
+
+S.push({part:4, kicker:"Safety Facts & Fines", title:"A Michigan School District", type:"scenario",
+  body:["After a parent complained, the EPA investigated all 263 buildings in a Michigan school district and found the district had failed to properly monitor asbestos in 256 of them — and couldn't say whether the rest had the same problem, because records weren't kept."],
+  prompt:"What do you think the EPA fine came to?",
+  options:[
+    {t:"$1.4 million", c:true, x:"Correct — and the case shows that complaints from non-occupants of a building can carry fines just as large as complaints from employees."},
+    {t:"$14,000", c:false, x:"The real figure was two orders of magnitude larger."},
+    {t:"No fine — only a corrective order", c:false, x:"This was a substantial monetary fine, not just a corrective order."},
+  ],
+  statline:"EPA fine: $1.4 million · 263 buildings investigated · 256 found non-compliant"});
+
+S.push({part:4, kicker:"Suggestion Programs", title:"Walton Contractors in Practice", type:"mcq",
+  body:["The chapter's sample suggestion form (Figure 12-3) comes from Walton Contractors, Inc. — an example of a program applying the effectiveness criteria in practice."],
+  prompt:"What does Walton Contractors do with the costs and savings generated by its suggestion system?",
+  options:[
+    {t:"Keeps them confidential, reported only to ownership", c:false, x:"The opposite — Walton Contractors publishes this information rather than keeping it confidential."},
+    {t:"Publishes them in its newsletter, alongside recognizing employees with awards at a monthly ceremony", c:true, x:"Correct — publicizing costs/savings and recognizing employees promptly are both part of what the criteria for an effective program require."},
+    {t:"Reports them only once a year, at the annual holiday party", c:false, x:"The chapter emphasizes prompt, ongoing recognition — not just an annual mention."},
+  ]});
+
+S.push({part:4, kicker:"Competition", title:"Using Competition the Right Way", type:"multi",
+  body:["Competition can be organized among teams, shifts, divisions, or even job sites — but only carefully."],
+  prompt:"Select every tip the chapter gives for using competition positively.",
+  options:[
+    {t:"Involve the employees who will compete in planning the program", c:true},
+    {t:"Encourage competition among groups rather than individuals, while still promoting individual initiative within groups", c:true},
+    {t:"Make sure resources and talent are distributed equitably among competing teams", c:true},
+    {t:"Let the highest-performing team design the rules for everyone else", c:false},
+  ],
+  explain:"Fairness is the theme running through all three real tips — letting one team set the rules for the rest would undercut that fairness."});
+
+S.push({part:4, kicker:"Competition", title:"The Risk Worth Watching", type:"mcq",
+  body:["Competition can promote safety, but if not used wisely it can do more harm than good."],
+  prompt:"What's the main risk the chapter warns about?",
+  options:[
+    {t:"Competing teams may cover up or fail to report accidents in order to win", c:true, x:"Correct — which is why failing to report should be grounds for elimination from the competition."},
+    {t:"Competitions are too expensive to run on most job sites", c:false, x:"Cost isn't the risk the chapter highlights."},
+    {t:"Workers lose interest in competitions within a few days", c:false, x:"Engagement isn't the concern raised — underreporting is."},
+  ]});
+
+/* ---------- PART 5 ---------- */
+S.push({part:5, kicker:"The Teamwork Approach", title:"Characteristics of Effective Teams", type:"multi",
+  body:["Effective teams share several characteristics in common."],
+  prompt:"Select every characteristic the chapter lists for an effective team.",
+  options:[
+    {t:"A supportive environment", c:true},
+    {t:"Team-player skills", c:true},
+    {t:"Role clarity", c:true},
+    {t:"Clear direction", c:true},
+    {t:"Team-oriented rewards and accountability", c:true},
+    {t:"A single dominant leader who makes every decision alone", c:false},
+  ],
+  explain:"A single all-powerful decision-maker runs against the teamwork model entirely — these six characteristics describe shared structure, not one-person control."});
+
+S.push({part:5, kicker:"Role Clarity", title:"Stay in Your Lane", type:"mcq",
+  body:["Role clarity is one of the six characteristics of an effective team: all members understand their respective roles and play them."],
+  prompt:"What analogy does the chapter use to explain role clarity?",
+  options:[
+    {t:"An orchestra, where every musician reads from the same score", c:false, x:"The chapter's analogy is a sports team, not an orchestra."},
+    {t:"A football team — chaos follows if a lineman decides to run the ball instead of blocking", c:true, x:"Correct — the quarterback, running backs, receivers, and linemen each have to stay in their role for the team to function."},
+    {t:"A relay race, where only one runner can be active at a time", c:false, x:"Not the chapter's analogy — role clarity is about several members working their distinct roles simultaneously."},
+  ]});
+
+S.push({part:5, kicker:"The Team Charter", title:"Match the Component to What It Defines", type:"match",
+  body:["A team's charter gives it clear direction through three components. Match each to what it defines."],
+  pairs:[
+    {l:"Mission", r:"The team's purpose and how it fits into the larger organization"},
+    {l:"Objectives", r:"Exactly what the team is supposed to accomplish"},
+    {l:"Accountability measures", r:"How the team's performance will be evaluated"},
+  ]});
+
+S.push({part:5, kicker:"Teamwork", title:"Benefits, or Problems?", type:"sort",
+  body:["Teamwork brings real advantages, but it isn't risk-free. Sort each statement to whether the chapter lists it as a potential benefit or a potential problem."],
+  buckets:["Potential Benefit","Potential Problem"],
+  items:[
+    {t:"Better understanding of safety rules and regulations", b:0},
+    {t:"Greater employee awareness and continual improvement", b:0},
+    {t:"A team can take a long concerted effort to form, but fall apart quickly", b:1},
+    {t:"Personnel changes can disrupt a team and break down cohesiveness", b:1},
+    {t:"Poorly motivated employees can use a team to blend in and avoid participation", b:1},
+    {t:"Positive, productive competition and broader employee input", b:0},
+  ]});
+
+S.push({part:5, kicker:"Responsibilities of Team Members", title:"What a Good Team Member Does", type:"multi",
+  body:["Teamwork only works if individual members carry their share of it."],
+  prompt:"Select every responsibility the chapter lists for team members.",
+  options:[
+    {t:"Actively participate in all team activities", c:true},
+    {t:"Be punctual in attendance at meetings", c:true},
+    {t:"Be honest and open toward fellow team members", c:true},
+    {t:"Be open to the ideas of others", c:true},
+    {t:"Defer every decision to the most senior member present", c:false},
+  ],
+  explain:"Teamwork depends on shared participation and openness — deferring everything to seniority undercuts the whole model."});
+
+S.push({part:5, kicker:"Parallel Mentoring", title:"Match the Strategy to What It Means", type:"match",
+  body:["Parallel mentoring — mentoring between workers of equal rank — follows three strategies. Match each to what it means."],
+  pairs:[
+    {l:"Be a second pair of eyes and ears", r:"Spread the word about what you've learned and step forward to show fellow workers the safe way"},
+    {l:"Work quietly to enhance performance", r:"Share what's been learned without being bossy or high-handed"},
+    {l:"Point out hazards in real time", r:"Spot hazardous conditions and behaviors, exerting positive peer pressure before accidents happen"},
+  ]});
+
+S.push({part:5, kicker:"Mentoring for Safety", title:"True or False: Mentors & Role Models", type:"truefalse",
+  body:["Mark each statement about mentoring true or false."],
+  items:[
+    {t:"A role model can be someone you've never actually met, such as a figure in a book or movie.", a:true, x:"True — that's exactly what separates a role model from a mentor."},
+    {t:"Mentoring requires a face-to-face, one-on-one relationship with frequent contact.", a:true, x:"True."},
+    {t:"Parallel mentoring happens between a senior executive and a brand-new hire.", a:false, x:"False — parallel mentoring specifically happens between workers of equal rank and status."},
+    {t:"Mentors are expected to be a consistent role model of a safety-first attitude themselves.", a:true, x:"True."},
+  ]});
+
+S.push({part:5, kicker:"Safety in Construction Contracts", title:"What an Approved Safety Plan Covers", type:"multi",
+  body:["The chapter lists twelve elements an approved safety plan should include."],
+  prompt:"Select every element actually listed among them.",
+  options:[
+    {t:"Major incident procedures", c:true},
+    {t:"First aid facilities and provisions", c:true},
+    {t:"Housekeeping requirements", c:true},
+    {t:"Site access and security", c:true},
+    {t:"Job-specific safety procedures (cranes, hoisting, noise, falls, scaffolding)", c:true},
+    {t:"Projected profit margin for the job", c:false},
+    {t:"A marketing plan for the general contractor", c:false},
+  ],
+  explain:"The twelve real elements run from major incident procedures through job-specific concerns like cranes and scaffolding — none of them are financial or marketing items."});
+
+S.push({part:5, kicker:"Mentoring for Safety", title:"Mentor or Role Model?", type:"mcq",
+  body:["A role model can be anyone exemplifying admirable qualities — even someone in a book or movie you've never met. Mentoring is different."],
+  prompt:"What does mentoring require that a role model doesn't?",
+  options:[
+    {t:"A face-to-face, one-on-one relationship reinforced by frequent contact and communication", c:true, x:"Correct — that direct, ongoing relationship is exactly what separates mentoring from simply being a role model."},
+    {t:"A formal certificate issued by OSHA", c:false, x:"No certification requirement is described — mentoring is defined by the relationship, not a credential."},
+    {t:"A higher position in the company org chart", c:false, x:"Parallel mentoring, covered elsewhere in the chapter, specifically happens between workers of equal rank."},
+  ]});
+
+S.push({part:5, kicker:"Responsibilities of Mentors", title:"What Good Mentors Actually Do", type:"multi",
+  body:["The chapter lists specific responsibilities for anyone acting as a safety mentor."],
+  prompt:"Select every responsibility the chapter lists for mentors.",
+  options:[
+    {t:"Communicate openly, frankly, tactfully, and frequently with protégés", c:true},
+    {t:"Serve as a patient, attentive listener", c:true},
+    {t:"Help protégés set realistic goals and timetables", c:true},
+    {t:"Be a consistent role model of a safety-first attitude", c:true},
+    {t:"Make every decision for the protégé so they never have to choose", c:false},
+  ],
+  explain:"Mentors guide and support — they don't take over the protégé's decisions entirely."});
+
+S.push({part:5, kicker:"Safety in Construction Contracts", title:"Building Safety Into the Paperwork", type:"mcq",
+  body:["Building safety requirements into contracts lets an owner or general contractor ensure it's working with contractors who treat safety seriously."],
+  prompt:"Which of these is something the chapter says a contract should require?",
+  options:[
+    {t:"Mechanisms ensuring all subcontractors meet safety requirements", c:true, x:"Correct — along with required safety meetings, monthly reports, and required training."},
+    {t:"A fixed bonus paid directly to the lowest bidder", c:false, x:"Bonus structure isn't part of the safety-in-contracts guidance."},
+    {t:"A requirement that only union labor be used on site", c:false, x:"Labor source isn't part of what the chapter recommends building into safety contract language."},
+  ]});
+
+/* ---------- FINAL ---------- */
+S.push({kind:"quizfinal", title:"Final Check", kicker:"Before You Clock Out",
+  body:["Six quick ones, pulled from across the chapter. Answer each, then see your score."],
+  items:[
+    {q:"A company's safety policy should be —",
+     options:[{t:"Short and simple",c:true},{t:"Long and highly detailed",c:false},{t:"Reviewed only once, at founding",c:false}]},
+    {q:"Enforcing the same punishment for the same infraction, regardless of who commits it, is called —",
+     options:[{t:"Consistency",c:true},{t:"Objectivity",c:false},{t:"Escalation",c:false}]},
+    {q:"OSHA's 10-Hour course is aimed at —",
+     options:[{t:"Entry-level workers with no prior safety training",c:true},{t:"Only safety directors",c:false},{t:"Subcontractor CEOs",c:false}]},
+    {q:"The main risk OSHA worries about with safety incentive programs is —",
+     options:[{t:"Underreporting of accidents and near-misses",c:true},{t:"Employees becoming overconfident",c:false},{t:"Rewards being too expensive",c:false}]},
+    {q:"Mentoring, unlike simply being a role model, requires —",
+     options:[{t:"A face-to-face, one-on-one relationship with frequent contact",c:true},{t:"A formal diploma",c:false},{t:"Seniority over the protégé",c:false}]},
+    {q:"Parallel mentoring is mentoring provided by —",
+     options:[{t:"Workers of equal rank and status",c:true},{t:"Only certified OSHA trainers",c:false},{t:"Executives mentoring new hires",c:false}]},
+  ]});
+
+S.push({kind:"end"});
+
+/* ---------------------------------------------------------------
+   STATE
+--------------------------------------------------------------- */
+let cur = 0;
+const total = S.length;
+let answered = {};
+let visited = new Set();
+
+function saveProgress(){
+  try{ localStorage.setItem('ch12_progress', JSON.stringify({cur, answered})); }catch(e){}
+}
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem('ch12_progress');
+    if(raw){ const d = JSON.parse(raw); if(d && typeof d.cur==='number'){ answered = d.answered||{}; } }
+  }catch(e){}
+}
+loadProgress();
+
+function totalScore(){
+  let got=0, poss=0;
+  Object.values(answered).forEach(a=>{ got+=a.correct; poss+=a.total; });
+  return {got, poss};
+}
+function updateScorePill(){
+  const {got,poss} = totalScore();
+  document.getElementById('scoreText').textContent = poss? (got+' / '+poss) : '0 / 0';
+}
+
+function buildRail(){
+  const rail = document.getElementById('rail');
+  rail.innerHTML = '';
+  S.forEach((s,i)=>{
+    if(s.kind==='start'||s.kind==='end') return;
+    const b = document.createElement('button');
+    b.className='tick'+(visited.has(i)?' visited':'')+(i===cur?' current':'');
+    b.dataset.part = s.part || (s.kind==='quizfinal'?5:1);
+    b.title = s.title||'';
+    b.addEventListener('click',()=>goto(i));
+    rail.appendChild(b);
+  });
+}
+
+function el(tag,cls,html){ const e=document.createElement(tag); if(cls)e.className=cls; if(html!==undefined)e.innerHTML=html; return e; }
+
+function renderBody(container, bodyArr){
+  (bodyArr||[]).forEach(p=>{
+    container.appendChild(el('p','body-text',p));
+  });
+}
+
+function renderMCQ(stage, s, idx){
+  const card = el('div','card');
+  card.appendChild(el('div','kicker', s.kicker));
+  card.appendChild(el('h2','title', s.title));
+  renderBody(card, s.body);
+  if(s.statline) card.appendChild(el('div','statline', s.statline));
+  const w = el('div','widget');
+  w.appendChild(el('div','prompt', s.prompt));
+  const list = el('div','opt-list');
+  const fb = el('div','feedback');
+  let locked=false;
+  s.options.forEach((o,oi)=>{
+    const b=document.createElement('button');
+    b.className='opt radio'; b.type='button';
+    b.innerHTML='<span class="box"></span><span>'+o.t+'</span>';
+    b.addEventListener('click',()=>{
+      if(locked) return; locked=true;
+      [...list.children].forEach((c,ci)=>{
+        c.disabled=true; c.classList.add('locked');
+        if(s.options[ci].c) c.classList.add('correct');
+      });
+      if(!o.c) b.classList.add('incorrect');
+      fb.className='feedback show '+(o.c?'good':'bad');
+      const correctOpt = s.options.find(x=>x.c);
+      fb.innerHTML = (o.c? '<b>Correct.</b> ' : '<b>Not quite.</b> ') + (o.x || correctOpt.x || '');
+      recordAnswer(idx, o.c?1:0, 1);
+    });
+    list.appendChild(b);
+  });
+  w.appendChild(list); w.appendChild(fb);
+  card.appendChild(w);
+  stage.appendChild(card);
+}
+
+function renderMulti(stage, s, idx){
+  const card = el('div','card');
+  card.appendChild(el('div','kicker', s.kicker));
+  card.appendChild(el('h2','title', s.title));
+  renderBody(card, s.body);
+  const w = el('div','widget');
+  w.appendChild(el('div','prompt', s.prompt));
+  const list = el('div','opt-list');
+  const fb = el('div','feedback');
+  const btns=[];
+  let checked=false;
+  const state = s.options.map(()=>false);
+  s.options.forEach((o,oi)=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.type='button';
+    b.innerHTML='<span class="box"></span><span>'+o.t+'</span>';
+    b.addEventListener('click',()=>{
+      if(checked) return;
+      state[oi]=!state[oi];
+      b.querySelector('.box').textContent = state[oi]?'✓':'';
+      b.classList.toggle('sel', state[oi]);
+    });
+    btns.push(b); list.appendChild(b);
+  });
+  const checkBtn = document.createElement('button');
+  checkBtn.className='nbtn primary'; checkBtn.style.marginTop='12px'; checkBtn.textContent='Check answers';
+  checkBtn.addEventListener('click',()=>{
+    if(checked) return; checked=true;
+    let correct=0, total=s.options.length;
+    btns.forEach((b,oi)=>{
+      b.disabled=true; b.classList.add('locked');
+      const should = s.options[oi].c;
+      if(should===state[oi]) correct++;
+      if(should) b.classList.add('correct');
+      else if(state[oi]) b.classList.add('incorrect');
+    });
+    fb.className='feedback show '+(correct===total?'good':'bad');
+    fb.innerHTML = '<b>'+correct+' / '+total+' correct.</b> '+(s.explain||'');
+    recordAnswer(idx, correct, total);
+    checkBtn.remove();
+  });
+  w.appendChild(list); w.appendChild(checkBtn); w.appendChild(fb);
+  card.appendChild(w);
+  stage.appendChild(card);
+}
+
+function renderMatch(stage, s, idx){
+  const card = el('div','card');
+  card.appendChild(el('div','kicker', s.kicker));
+  card.appendChild(el('h2','title', s.title));
+  renderBody(card, s.body);
+  const w = el('div','widget');
+  const grid = el('div','match-grid');
+  const leftCol = el('div'); leftCol.appendChild(el('div','match-col-label','Term'));
+  const rightCol = el('div'); rightCol.appendChild(el('div','match-col-label','Definition'));
+  const order = s.pairs.map((_,i)=>i);
+  const rightOrder = [...order].sort(()=>Math.random()-0.5);
+  let selLeft=null, selRight=null, pairedCount=0;
+  const leftEls=[], rightEls=[];
+  const fb = el('div','feedback');
+
+  function tryPair(){
+    if(selLeft===null||selRight===null) return;
+    const lBtn=leftEls[selLeft], rBtn=rightEls.find(r=>r.dataset.idx==selRight);
+    if(selLeft===selRight){
+      lBtn.classList.remove('sel'); rBtn.classList.remove('sel');
+      lBtn.classList.add('paired'); rBtn.classList.add('paired');
+      lBtn.disabled=true; rBtn.disabled=true;
+      pairedCount++;
+      if(pairedCount===s.pairs.length){
+        fb.className='feedback show good';
+        fb.innerHTML='<b>All matched.</b> Nice work.';
+        recordAnswer(idx, s.pairs.length, s.pairs.length);
+      }
+    } else {
+      lBtn.classList.add('wrong-flash'); rBtn.classList.add('wrong-flash');
+      setTimeout(()=>{
+        lBtn.classList.remove('sel','wrong-flash'); rBtn.classList.remove('sel','wrong-flash');
+      },420);
+    }
+    selLeft=null; selRight=null;
+  }
+
+  s.pairs.forEach((p,i)=>{
+    const b=document.createElement('button'); b.className='match-item'; b.textContent=p.l; b.dataset.idx=i;
+    b.addEventListener('click',()=>{
+      if(b.classList.contains('paired'))return;
+      leftEls.forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel'); selLeft=i; tryPair();
+    });
+    leftEls.push(b); leftCol.appendChild(b);
+  });
+  rightOrder.forEach(i=>{
+    const p=s.pairs[i];
+    const b=document.createElement('button'); b.className='match-item'; b.textContent=p.r; b.dataset.idx=i;
+    b.addEventListener('click',()=>{
+      if(b.classList.contains('paired'))return;
+      rightEls.forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel'); selRight=i; tryPair();
+    });
+    rightEls.push(b); rightCol.appendChild(b);
+  });
+  grid.appendChild(leftCol); grid.appendChild(rightCol);
+  w.appendChild(grid); w.appendChild(fb);
+  card.appendChild(w);
+  stage.appendChild(card);
+}
+
+function renderSort(stage, s, idx){
+  const card = el('div','card');
+  card.appendChild(el('div','kicker', s.kicker));
+  card.appendChild(el('h2','title', s.title));
+  renderBody(card, s.body);
+  const w = el('div','widget');
+  const pool = el('div','sort-pool');
+  const buckets = el('div','sort-buckets');
+  const bucketEls = s.buckets.map(name=>{
+    const d = el('div','bucket');
+    d.appendChild(el('div','bucket-label', name));
+    const inner = el('div'); d.appendChild(inner);
+    buckets.appendChild(d);
+    return inner;
+  });
+  const shuffled = s.items.map((it,i)=>({...it,i})).sort(()=>Math.random()-0.5);
+  let placed=0, correctCount=0;
+  const chips=[];
+  let activeChoice=null;
+  shuffled.forEach(item=>{
+    const chip = el('button','sort-chip', item.t);
+    chip.type='button';
+    chip.addEventListener('click',()=>{
+      if(chip.classList.contains('gone'))return;
+      chips.forEach(c=>c.style.outline='');
+      chip.style.outline='2px solid var(--accent)';
+      activeChoice=chip;
+    });
+    chip._item=item;
+    chips.push(chip); pool.appendChild(chip);
+  });
+  bucketEls.forEach((inner, bi)=>{
+    inner.parentElement.addEventListener('click',(ev)=>{
+      if(!activeChoice) return;
+      const item = activeChoice._item;
+      const right = item.b===bi;
+      const tag = el('span','placed '+(right?'right':'wrong'), item.t+(right?' ✓':' ✗'));
+      inner.appendChild(tag);
+      activeChoice.classList.add('gone');
+      activeChoice=null; placed++;
+      if(right) correctCount++;
+      if(placed===shuffled.length){
+        recordAnswer(idx, correctCount, shuffled.length);
+        const fb=el('div','feedback show '+(correctCount===shuffled.length?'good':'bad'),
+          '<b>'+correctCount+' / '+shuffled.length+' correct.</b>');
+        w.appendChild(fb);
+      }
+    });
+  });
+  w.appendChild(el('div','prompt','Tap an item, then tap the bucket it belongs in.'));
+  w.appendChild(pool); w.appendChild(buckets);
+  card.appendChild(w);
+  stage.appendChild(card);
+}
+
+function renderSequence(stage, s, idx){
+  const card = el('div','card');
+  card.appendChild(el('div','kicker', s.kicker));
+  card.appendChild(el('h2','title', s.title));
+  renderBody(card, s.body);
+  const w = el('div','widget');
+  let order = s.items.map((_,i)=>i).sort(()=>Math.random()-0.5);
+  const list = el('div','seq-list');
+  const fb = el('div','feedback');
+  function render(){
+    list.innerHTML='';
+    order.forEach((itemIdx,pos)=>{
+      const row = el('div','seq-item');
+      row.appendChild(el('span','seq-num',(pos+1)+'.'));
+      row.appendChild(el('span','',s.items[itemIdx]));
+      const btns = el('div','seq-btns');
+      const up = document.createElement('button'); up.textContent='↑'; up.type='button';
+      up.disabled = pos===0;
+      up.addEventListener('click',()=>{ [order[pos-1],order[pos]]=[order[pos],order[pos-1]]; render(); });
+      const down = document.createElement('button'); down.textContent='↓'; down.type='button';
+      down.disabled = pos===order.length-1;
+      down.addEventListener('click',()=>{ [order[pos+1],order[pos]]=[order[pos],order[pos+1]]; render(); });
+      btns.appendChild(up); btns.appendChild(down);
+      row.appendChild(btns);
+      list.appendChild(row);
+    });
+  }
+  render();
+  const checkBtn = document.createElement('button');
+  checkBtn.className='nbtn primary'; checkBtn.style.marginTop='12px'; checkBtn.textContent='Check order';
+  checkBtn.addEventListener('click',()=>{
+    const right = order.every((v,i)=>v===s.correctOrder[i]);
+    fb.className='feedback show '+(right?'good':'bad');
+    fb.innerHTML = right? '<b>That\'s the order.</b> '+(s.explain||'') : '<b>Not quite the order.</b> '+(s.explain||'');
+    recordAnswer(idx, right?1:0, 1);
+    checkBtn.disabled=true;
+  });
+  w.appendChild(list); w.appendChild(checkBtn); w.appendChild(fb);
+  card.appendChild(w);
+  stage.appendChild(card);
+}
+
+function renderTrueFalse(stage, s, idx){
+  const card = el('div','card');
+  card.appendChild(el('div','kicker', s.kicker));
+  card.appendChild(el('h2','title', s.title));
+  renderBody(card, s.body);
+  const w = el('div','widget');
+  let correct=0, answeredCount=0;
+  s.items.forEach(item=>{
+    const row = el('div','qf-item');
+    row.appendChild(el('div','prompt',item.t));
+    const btnrow = el('div','opt-list');
+    const fb = el('div','feedback');
+    ['True','False'].forEach(label=>{
+      const val = label==='True';
+      const b=document.createElement('button'); b.className='opt'; b.type='button'; b.textContent=label;
+      b.addEventListener('click',()=>{
+        if(row.dataset.done) return; row.dataset.done='1'; answeredCount++;
+        const right = val===item.a;
+        b.classList.add(right?'correct':'incorrect');
+        [...btnrow.children].forEach(c=>c.disabled=true);
+        if(right) correct++;
+        fb.className='feedback show '+(right?'good':'bad');
+        fb.innerHTML=(right?'<b>Correct.</b> ':'<b>Not quite.</b> ')+item.x;
+        if(answeredCount===s.items.length) recordAnswer(idx, correct, s.items.length);
+      });
+      btnrow.appendChild(b);
+    });
+    row.appendChild(btnrow); row.appendChild(fb);
+    w.appendChild(row);
+  });
+  card.appendChild(w);
+  stage.appendChild(card);
+}
+
+function renderChecklist(stage, s, idx){
+  const card = el('div','card');
+  card.appendChild(el('div','kicker', s.kicker));
+  card.appendChild(el('h2','title', s.title));
+  renderBody(card, s.body);
+  const w = el('div','widget');
+  s.items.forEach(t=>{
+    const row = el('div','chk-row');
+    const box = el('div','chk-box');
+    box.addEventListener('click',()=>{ box.classList.toggle('on'); box.textContent = box.classList.contains('on')?'✓':''; });
+    row.appendChild(box); row.appendChild(el('div','',t));
+    w.appendChild(row);
+  });
+  card.appendChild(w);
+  stage.appendChild(card);
+}
+
+function renderQuizFinal(stage, s, idx){
+  const card = el('div','card');
+  card.appendChild(el('div','kicker', s.kicker));
+  card.appendChild(el('h2','title', s.title));
+  renderBody(card, s.body);
+  let correct=0;
+  s.items.forEach((q,qi)=>{
+    const row = el('div','qf-item');
+    row.appendChild(el('div','prompt',(qi+1)+'. '+q.q));
+    const list = el('div','opt-list');
+    let locked=false;
+    q.options.forEach(o=>{
+      const b=document.createElement('button'); b.className='opt radio'; b.type='button';
+      b.innerHTML='<span class="box"></span><span>'+o.t+'</span>';
+      b.addEventListener('click',()=>{
+        if(locked)return; locked=true;
+        [...list.children].forEach((c,ci)=>{ c.disabled=true; c.classList.add('locked'); if(q.options[ci].c)c.classList.add('correct'); });
+        if(!o.c) b.classList.add('incorrect'); else correct++;
+        if([...list.children].every(c=>c.disabled) && qi===s.items.length-1){
+          setTimeout(()=>showRing(),250);
+        }
+      });
+      list.appendChild(b);
+    });
+    row.appendChild(list);
+    card.appendChild(row);
+  });
+  const ringWrap = el('div'); ringWrap.style.marginTop='18px'; ringWrap.style.display='none';
+  card.appendChild(ringWrap);
+  stage.appendChild(card);
+
+  function showRing(){
+    const pct = Math.round(correct/s.items.length*100);
+    ringWrap.style.display='block';
+    ringWrap.innerHTML = '<div class="qf-score-ring" style="--pct:'+pct+'"><span>'+correct+'/'+s.items.length+'<small>SCORE</small></span></div>'+
+      '<p class="body-text" style="text-align:center">'+scoreMessage(pct)+'</p>';
+    recordAnswer(idx, correct, s.items.length);
+  }
+  function scoreMessage(pct){
+    if(pct>=85) return 'Foreman-ready. You\'ve got this chapter down.';
+    if(pct>=60) return 'Solid. A quick pass back through the rail will tighten the rest up.';
+    return 'Worth a second lap — jump back to any station from the rail up top.';
+  }
+}
+
+function renderStart(stage){
+  const hero = el('div','hero');
+  hero.innerHTML = '<div class="tag">Chapter 12 · Interactive Review</div><h1>Promoting Safety: The Walkthrough</h1>'+
+    '<p>'+STATION_IDX.length+' stations. Match the training options, sort the Do’s and Don’ts for a safety committee, weigh in on real fine cases, and work through mentoring and teamwork. No lecture — just the chapter, worked.</p>';
+  const grid = el('div','part-grid');
+  Object.entries(PARTS).forEach(([n,t])=>{
+    grid.appendChild(el('div','part-card','<div class="n">PART 0'+n+'</div><div class="t">'+t+'</div>'));
+  });
+  hero.appendChild(grid);
+  const startBtn = el('button','bigstart','Start the walkthrough →');
+  startBtn.style.marginTop='24px';
+  startBtn.addEventListener('click',()=>goto(1));
+  hero.appendChild(document.createElement('br'));
+  hero.appendChild(startBtn);
+  stage.appendChild(hero);
+}
+function renderEnd(stage){
+  const {got,poss} = totalScore();
+  const hero = el('div','hero');
+  hero.innerHTML = '<div class="tag">Walkthrough Complete</div><h1>That\'s the Chapter</h1>'+
+    '<p>Your running score across every graded station: <b class="mono">'+got+' / '+poss+'</b>. Report this score to your instructor as directed. Jump back to any station on the rail to review, or close this out.</p>';
+  const again = el('button','bigstart','Review from the top ↺');
+  again.addEventListener('click',()=>goto(1));
+  hero.appendChild(again);
+  stage.appendChild(hero);
+}
+
+function recordAnswer(idx, correct, total){
+  answered[idx] = {correct, total};
+  updateScorePill();
+  saveProgress();
+}
+
+function render(){
+  const stage = document.getElementById('stage');
+  stage.innerHTML = '';
+  const s = S[cur];
+  visited.add(cur);
+  if(s.kind==='start') renderStart(stage);
+  else if(s.kind==='end') renderEnd(stage);
+  else if(s.kind==='quizfinal') renderQuizFinal(stage, s, cur);
+  else if(s.type==='mcq' || s.type==='scenario') renderMCQ(stage, s, cur);
+  else if(s.type==='multi') renderMulti(stage, s, cur);
+  else if(s.type==='match') renderMatch(stage, s, cur);
+  else if(s.type==='sort') renderSort(stage, s, cur);
+  else if(s.type==='sequence') renderSequence(stage, s, cur);
+  else if(s.type==='truefalse') renderTrueFalse(stage, s, cur);
+  else if(s.type==='checklist') renderChecklist(stage, s, cur);
+  window.scrollTo({top:0, behavior:'instant'});
+  buildRail();
+  updateScorePill();
+  updateNav();
+}
+
+const STATION_IDX = S.map((s,i)=> (s.kind==='start'||s.kind==='end') ? null : i).filter(i=>i!==null);
+function updateNav(){
+  const backBtn=document.getElementById('btnBack'), nextBtn=document.getElementById('btnNext'), mid=document.getElementById('navMid');
+  backBtn.disabled = cur===0;
+  nextBtn.textContent = cur===total-1 ? 'Done' : (cur===total-2? 'Finish →' : (cur===total-3? 'See final check →' : 'Next →'));
+  nextBtn.disabled = cur===total-1;
+  if(cur===0) mid.textContent='Start';
+  else if(cur===total-1) mid.textContent='End';
+  else mid.textContent = 'Station '+(STATION_IDX.indexOf(cur)+1)+' / '+STATION_IDX.length;
+}
+
+function goto(i){
+  cur = Math.max(0, Math.min(total-1, i));
+  render();
+}
+document.getElementById('btnBack').addEventListener('click',()=>goto(cur-1));
+document.getElementById('btnNext').addEventListener('click',()=>goto(cur+1));
+
+gateInit();
+render();
+
+try{
+  if(window.claude && window.claude.hot){
+    window.claude.hot.snapshot(()=>({cur, answered}));
+    const boot = (data)=>{
+      if(data && typeof data.cur==='number'){ cur=data.cur; answered=data.answered||{}; }
+      render();
+    };
+    if(window.claude.hot.ready) window.claude.hot.ready(boot); else boot(window.claude.hot.data||{});
+  }
+}catch(e){}
+
+})();
+</script>
+</body>
+</html>
